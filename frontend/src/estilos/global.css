@@ -1,0 +1,158 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+  --primary: #B01E28;
+  --primary-dark: #8B1A21;
+  --secondary: #B01E28;
+  --accent: #FFFFFF;
+  --bg-main: #FFFFFF;
+  --bg-light: #FFFFFF;
+  --text-main: #111111;
+  --text-muted: #444444;
+  --border: #E5E5E5;
+  --glass-border: #E5E5E5;
+
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.06);
+  --shadow-premium: 0 20px 40px rgba(176, 30, 40, 0.1);
+  --transition-smooth: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: #FFFFFF;
+  color: #111111;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+.brand-font {
+  font-family: 'Playfair Display', serif;
+  color: var(--text-main);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(176, 30, 40, 0.3);
+}
+
+.btn-secondary {
+  background: var(--text-muted);
+  color: white;
+  padding: 12px 28px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-secondary:hover {
+  background: #666666;
+}
+
+.card-fiesta,
+.cartao {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-smooth);
+  color: var(--text-main);
+}
+
+.card-fiesta:hover {
+  border-color: var(--primary);
+  box-shadow: var(--shadow-premium);
+}
+
+input,
+select,
+textarea,
+.date-picker {
+  background: white;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: 6px;
+  color: var(--text-main);
+  width: 100%;
+  margin-bottom: 16px;
+  transition: var(--transition-smooth);
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+.date-picker:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(176, 30, 40, 0.1);
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+}
+
+a {
+  color: var(--text-main);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #FFFFFF;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}

@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+backend/sistema_reserva.db
+*.db
+
+node_modules/
+frontend/dist/
+
+.env
+.env.*
+!.env.example
+
