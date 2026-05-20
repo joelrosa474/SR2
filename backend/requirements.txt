@@ -10,4 +10,4 @@ pytest
 passlib[bcrypt]
 python-multipart
 pytest
-+email-validator
+email-validator
