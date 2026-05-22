@@ -49,7 +49,14 @@ if not SECRET_KEY:
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-CORS_ORIGINS = _obter_lista("CORS_ORIGINS", ["http://localhost:5173", "http://127.0.0.1:5173"])
+CORS_ORIGINS = _obter_lista(
+    "CORS_ORIGINS",
+    [
+        "https://sr-2-mu.vercel.app",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ],
+)
 
 ADMIN_INICIAL_EMAIL = os.getenv("ADMIN_INICIAL_EMAIL", "admin@sistema.com")
 ADMIN_INICIAL_SENHA = os.getenv("ADMIN_INICIAL_SENHA")
