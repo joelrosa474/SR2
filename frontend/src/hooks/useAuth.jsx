@@ -34,7 +34,7 @@ export const AuthProvider = ({ children }) => {
             await apiServico.logout();
         } finally {
             setUsuario(null);
-            window.location.href = '/login';
+            window.location.href = '/quartos';
         }
     };
 
