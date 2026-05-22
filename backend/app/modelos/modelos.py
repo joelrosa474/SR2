@@ -13,6 +13,7 @@ class StatusReserva(enum.Enum):
     CONFIRMADA = "confirmada"
     CANCELADA = "cancelada"
     CONCLUIDA = "concluida"
+    EXPIRADA = "expirada"
 
 class Usuario(Base):
     __tablename__ = "usuarios"
@@ -46,10 +47,24 @@ class Reserva(Base):
     __tablename__ = "reservas"
 
     id = Column(Integer, primary_key=True, index=True)
+    codigo_reserva = Column(String(8), unique=True, index=True, nullable=True)
     cliente_id = Column(Integer, ForeignKey("usuarios.id"))
     quarto_id = Column(Integer, ForeignKey("quartos.id"))
+    nome_cliente = Column(String, nullable=True)
+    email_cliente = Column(String, nullable=True)
+    telefone_cliente = Column(String, nullable=True)
     data_entrada = Column(DateTime)
     data_saida = Column(DateTime)
+    tipo_diaria = Column(String, default="Diaria completa")
+    valor_diaria = Column(Float, default=0)
+    quantidade_dias = Column(Integer, default=1)
+    total_pagar = Column(Float, default=0)
+    metodo_pagamento = Column(String, nullable=True)
+    comprovativo_path = Column(String, nullable=True)
+    comprovativo_nome = Column(String, nullable=True)
+    pagamento_status = Column(String, default="pendente")
+    criado_em = Column(DateTime, nullable=True)
+    expira_em = Column(DateTime, nullable=True)
     status = Column(String, default=StatusReserva.PENDENTE.value)
 
     cliente = relationship("Usuario", back_populates="reservas")

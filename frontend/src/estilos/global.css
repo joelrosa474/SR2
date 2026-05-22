@@ -92,6 +92,16 @@ textarea {
   background: #666666;
 }
 
+.btn-danger {
+  background: transparent;
+  color: #dc2626;
+  padding: 12px 20px;
+  border-radius: 6px;
+  border: 1px solid #dc2626;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .card-fiesta,
 .cartao {
   background: white;
@@ -155,4 +165,536 @@ a {
 
 .react-datepicker-wrapper {
   width: 100%;
+}
+
+.pagina-quartos {
+  min-height: 100vh;
+  background: #fff;
+  color: var(--text-main);
+  padding: 56px 5% 72px;
+}
+
+.pagina-quartos__cabecalho {
+  max-width: 760px;
+  margin-bottom: 40px;
+}
+
+.pagina-quartos__cabecalho h1 {
+  font-size: clamp(2.1rem, 5vw, 3.6rem);
+  margin-bottom: 12px;
+}
+
+.pagina-quartos__cabecalho p {
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.lista-quartos-reserva {
+  display: grid;
+  gap: 32px;
+}
+
+.quarto-reserva {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.72fr) minmax(320px, 1.28fr);
+  gap: 22px;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  box-shadow: var(--shadow-soft);
+  background: #fff;
+}
+
+.galeria-quarto {
+  display: grid;
+  min-width: 0;
+  width: min(100%, 440px);
+  align-self: start;
+  justify-self: center;
+}
+
+.galeria-quarto--clicavel {
+  cursor: pointer;
+}
+
+.galeria-quarto--clicavel:focus-visible {
+  outline: 3px solid rgba(176, 30, 40, 0.25);
+  outline-offset: 4px;
+}
+
+.galeria-quarto__miniaturas img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #f3f4f6;
+}
+
+.galeria-quarto__miniaturas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 118px;
+  gap: 8px;
+  height: 100%;
+  min-height: 244px;
+}
+
+.detalhes-quarto {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 10px 6px;
+}
+
+.detalhes-quarto__topo {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.detalhes-quarto__topo p,
+.detalhes-quarto__bloco span,
+.detalhes-quarto__servicos span,
+.detalhes-quarto__metricas span,
+.detalhes-quarto__diaria-curta span,
+.modal-reserva__rotulo,
+.resumo-reserva__linha span,
+.resumo-reserva__total span,
+.pagamento-box span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.detalhes-quarto__topo h2 {
+  font-size: 2rem;
+}
+
+.status-quarto {
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid #ef4444;
+  color: #ef4444;
+}
+
+.status-quarto--disponivel {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.detalhes-quarto__bloco p {
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.detalhes-quarto__servicos div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.detalhes-quarto__servicos strong {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.detalhes-quarto__metricas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.detalhes-quarto__metricas div,
+.detalhes-quarto__diaria-curta {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.detalhes-quarto__metricas strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 1.15rem;
+}
+
+.detalhes-quarto__diaria-curta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.detalhes-quarto__botao {
+  margin-top: auto;
+  width: 100%;
+  min-height: 48px;
+}
+
+.detalhes-quarto__botao:disabled {
+  background: #777;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.modal-reserva-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.58);
+}
+
+.modal-reserva {
+  width: min(1080px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+}
+
+.modal-reserva__topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.modal-reserva__fechar {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-size: 1.2rem;
+}
+
+.modal-reserva__grid {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: 24px;
+}
+
+.resumo-reserva,
+.pagamento-box {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+}
+
+.resumo-reserva {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: #fafafa;
+}
+
+.resumo-reserva__linha,
+.resumo-reserva__total,
+.pagamento-box p {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.resumo-reserva__total {
+  border-bottom: none;
+  color: var(--primary);
+}
+
+.resumo-reserva__total strong {
+  font-size: 1.35rem;
+}
+
+.resumo-reserva__alerta {
+  border-radius: 8px;
+  border: 1px solid rgba(176, 30, 40, 0.25);
+  background: rgba(176, 30, 40, 0.06);
+  color: var(--primary);
+  padding: 12px;
+  font-weight: 600;
+}
+
+.pagamento-box {
+  background: #fff;
+}
+
+.pagamento-box h4 {
+  margin-bottom: 8px;
+}
+
+.pagamento-box p:last-child {
+  border-bottom: none;
+}
+
+.formulario-reserva {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+
+.formulario-reserva label {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.formulario-reserva__datas {
+  display: contents;
+}
+
+.formulario-reserva button {
+  grid-column: 1 / -1;
+}
+
+.pagina-reservas {
+  min-height: 100vh;
+  padding: 56px 5% 72px;
+  background: #fff;
+  color: var(--text-main);
+}
+
+.pagina-reservas__cabecalho {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.pagina-reservas__cabecalho h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  margin-bottom: 8px;
+}
+
+.pagina-reservas__cabecalho p,
+.reservas-vazio p {
+  color: var(--text-muted);
+}
+
+.reservas-resumo {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.reservas-resumo div {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.reservas-resumo span,
+.reserva-card__referencia {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.reservas-resumo strong {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.8rem;
+  color: var(--primary);
+}
+
+.reservas-filtros {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) 220px;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.reservas-lista {
+  display: grid;
+  gap: 16px;
+}
+
+.reserva-card {
+  display: grid;
+  grid-template-columns: minmax(280px, 1fr) minmax(170px, 0.45fr) minmax(260px, 0.7fr);
+  gap: 18px;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: var(--shadow-soft);
+}
+
+.reserva-card__principal {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.reserva-card__quarto {
+  flex: 0 0 60px;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 800;
+}
+
+.reserva-card h3 {
+  font-size: 1.2rem;
+}
+
+.reserva-card p {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.reserva-card__detalhes,
+.reserva-card__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.reserva-card__acoes {
+  justify-content: flex-end;
+}
+
+.reserva-card__acoes button,
+.reserva-card__acoes select {
+  width: auto;
+  margin-bottom: 0;
+  padding: 9px 12px;
+  font-size: 0.78rem;
+}
+
+.reserva-status,
+.reserva-pagamento {
+  border-radius: 999px;
+  padding: 7px 11px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.reserva-status {
+  border: 1px solid #dc2626;
+  color: #dc2626;
+}
+
+.reserva-status--pendente {
+  border-color: #d97706;
+  color: #d97706;
+}
+
+.reserva-status--confirmada {
+  border-color: #16a34a;
+  color: #16a34a;
+}
+
+.reserva-status--concluida {
+  border-color: #2563eb;
+  color: #2563eb;
+}
+
+.reserva-pagamento {
+  background: #f5f5f5;
+  color: var(--text-muted);
+}
+
+@media (max-width: 900px) {
+  .quarto-reserva,
+  .modal-reserva__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .galeria-quarto__miniaturas {
+    grid-auto-rows: 112px;
+    min-height: 232px;
+  }
+}
+
+@media (max-width: 640px) {
+  nav {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.8rem !important;
+  }
+
+  .pagina-quartos {
+    padding: 36px 4% 56px;
+  }
+
+  .quarto-reserva,
+  .modal-reserva {
+    padding: 14px;
+  }
+
+  .galeria-quarto__miniaturas {
+    grid-auto-rows: 96px;
+    min-height: auto;
+  }
+
+  .detalhes-quarto__metricas,
+  .formulario-reserva {
+    grid-template-columns: 1fr;
+  }
+
+  .resumo-reserva__linha,
+  .resumo-reserva__total,
+  .pagamento-box p {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+@media (max-width: 980px) {
+  .reserva-card {
+    grid-template-columns: 1fr;
+  }
+
+  .reserva-card__acoes {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 640px) {
+  .reservas-resumo,
+  .reservas-filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .reserva-card__principal {
+    align-items: flex-start;
+  }
 }

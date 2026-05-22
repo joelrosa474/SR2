@@ -115,11 +115,29 @@ class ReservaBase(BaseModel):
     data_saida: datetime
 
 class ReservaCriar(ReservaBase):
-    pass
+    nome_cliente: Optional[str] = None
+    email_cliente: Optional[EmailStr] = None
+    telefone_cliente: Optional[str] = None
+    metodo_pagamento: Optional[str] = None
+    codigo_reserva: Optional[str] = None
 
 class Reserva(ReservaBase):
     id: int
+    codigo_reserva: Optional[str] = None
     cliente_id: int
+    nome_cliente: Optional[str] = None
+    email_cliente: Optional[str] = None
+    telefone_cliente: Optional[str] = None
+    tipo_diaria: Optional[str] = None
+    valor_diaria: Optional[float] = None
+    quantidade_dias: Optional[int] = None
+    total_pagar: Optional[float] = None
+    metodo_pagamento: Optional[str] = None
+    comprovativo_path: Optional[str] = None
+    comprovativo_nome: Optional[str] = None
+    pagamento_status: Optional[str] = None
+    criado_em: Optional[datetime] = None
+    expira_em: Optional[datetime] = None
     status: str
     quarto: Optional[Quarto] = None
     cliente: Optional[Usuario] = None

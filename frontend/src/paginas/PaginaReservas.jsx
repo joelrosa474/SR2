@@ -1,14 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { apiServico } from '../servicos/api';
 import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
+const opcoesStatus = ['todos', 'pendente', 'confirmada', 'cancelada', 'concluida', 'expirada'];
+const statusResumo = ['pendente', 'confirmada', 'cancelada'];
+
+const formatarMoeda = (valor) => `${Number(valor || 0).toLocaleString('pt-AO')} Kz`;
+const formatarData = (data) => data ? new Date(data).toLocaleDateString('pt-PT') : '-';
+
 export const PaginaReservas = () => {
     const [reservas, setReservas] = useState([]);
     const [carregando, setCarregando] = useState(true);
+    const [filtroStatus, setFiltroStatus] = useState('todos');
+    const [busca, setBusca] = useState('');
     const { usuario } = useAuth();
     const podeGerenciarReservas = usuario?.tipo === 'administrador' || usuario?.tipo === 'funcionario';
-    const opcoesStatus = ['pendente', 'confirmada', 'cancelada', 'concluida'];
 
     useEffect(() => {
         carregarReservas();
@@ -16,27 +23,33 @@ export const PaginaReservas = () => {
 
     const carregarReservas = async () => {
         try {
-            let data;
-            if (usuario.tipo === 'cliente') {
-                data = await apiServico.listarMinhasReservas();
-            } else {
-                data = await apiServico.listarReservas();
-            }
+            const data = usuario.tipo === 'cliente'
+                ? await apiServico.listarMinhasReservas()
+                : await apiServico.listarReservas();
             setReservas(data);
         } catch (err) {
             console.error(err);
+            toast.error('Nao foi possivel carregar as reservas.');
         } finally {
             setCarregando(false);
         }
     };
 
+    const reservasFiltradas = useMemo(() => {
+        return reservas.filter((reserva) => {
+            const correspondeStatus = filtroStatus === 'todos' || reserva.status === filtroStatus;
+            const texto = `${reserva.codigo_reserva || ''} ${reserva.quarto?.numero || ''} ${reserva.cliente?.nome || ''} ${reserva.nome_cliente || ''} ${reserva.email_cliente || ''}`.toLowerCase();
+            return correspondeStatus && texto.includes(busca.toLowerCase());
+        });
+    }, [reservas, filtroStatus, busca]);
+
     const alterarStatus = async (id, status) => {
         try {
             await apiServico.atualizarStatusReserva(id, status);
-            carregarReservas();
+            await carregarReservas();
             toast.success('Status atualizado com sucesso!');
-        } catch (err) { 
-            toast.error(err.message); 
+        } catch (err) {
+            toast.error(err.message);
         }
     };
 
@@ -44,137 +57,132 @@ export const PaginaReservas = () => {
         if (confirm('Deseja realmente cancelar esta reserva?')) {
             try {
                 await apiServico.removerReserva(id);
-                carregarReservas();
+                await carregarReservas();
                 toast.success('Reserva cancelada com sucesso!');
-            } catch (err) { 
-                toast.error(err.message); 
+            } catch (err) {
+                toast.error(err.message);
             }
         }
+    };
+
+    const baixarComprovativo = async (reserva) => {
+        try {
+            const blob = await apiServico.baixarComprovativo(reserva.id);
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = reserva.comprovativo_nome || `comprovativo-${reserva.codigo_reserva || reserva.id}`;
+            link.click();
+            URL.revokeObjectURL(url);
+        } catch (err) {
+            toast.error(err.message);
+        }
+    };
+
+    if (carregando) {
+        return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-main)' }}>Sincronizando reservas...</div>;
     }
 
-    if (carregando) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-main)' }}>Sincronizando reservas...</div>;
-
-    const totaisPorStatus = opcoesStatus.reduce((acc, status) => {
-        acc[status] = reservas.filter(reserva => reserva.status === status).length;
+    const totaisPorStatus = statusResumo.reduce((acc, status) => {
+        acc[status] = reservas.filter((reserva) => reserva.status === status).length;
         return acc;
     }, {});
 
     return (
-        <div style={{ padding: '60px 5%', background: 'white', color: 'var(--text-main)', minHeight: '100vh' }}>
-            <div style={{ marginBottom: '40px' }}>
-                <h1 className="brand-font" style={{ fontSize: '2.5rem', color: 'var(--text-main)' }}>
-                    {usuario.tipo === 'cliente' ? 'Minhas Estadias' : 'Gestão de Reservas'}
-                </h1>
-                <p style={{ color: 'var(--text-muted)' }}>Histórico e solicitações do Hotel Fiesta.</p>
-            </div>
+        <main className="pagina-reservas">
+            <header className="pagina-reservas__cabecalho">
+                <div>
+                    <h1 className="brand-font">{usuario.tipo === 'cliente' ? 'Minhas Reservas' : 'Dashboard de Reservas'}</h1>
+                    <p>{usuario.tipo === 'cliente' ? 'Historico e acompanhamento das suas reservas.' : 'Visualize, filtre, valide pagamentos e acompanhe o historico.'}</p>
+                </div>
+            </header>
 
             {podeGerenciarReservas && (
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-                    {opcoesStatus.map(status => (
-                        <div key={status} className="glass" style={{ padding: '20px', borderRadius: '12px' }}>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontWeight: 'bold', letterSpacing: '1px', textTransform: 'uppercase' }}>{status}</p>
-                            <strong style={{ display: 'block', marginTop: '8px', fontSize: '1.6rem', color: 'var(--primary)' }}>{totaisPorStatus[status]}</strong>
+                <section className="reservas-resumo">
+                    {statusResumo.map((status) => (
+                        <div key={status}>
+                            <span>{status}</span>
+                            <strong>{totaisPorStatus[status]}</strong>
                         </div>
                     ))}
-                </div>
+                </section>
             )}
 
-            <div style={{ display: 'grid', gap: '24px' }}>
-                {reservas.length === 0 && (
-                    <div className="glass" style={{ padding: '40px', textAlign: 'center', borderRadius: '16px' }}>
-                        <p style={{ color: 'var(--text-muted)' }}>Nenhuma reserva encontrada no sistema.</p>
+            <section className="reservas-filtros">
+                <input
+                    value={busca}
+                    onChange={(e) => setBusca(e.target.value)}
+                    placeholder="Filtrar por cliente, quarto ou referencia"
+                />
+                <select value={filtroStatus} onChange={(e) => setFiltroStatus(e.target.value)}>
+                    {opcoesStatus.map((status) => (
+                        <option key={status} value={status}>{status.toUpperCase()}</option>
+                    ))}
+                </select>
+            </section>
+
+            <section className="reservas-lista">
+                {reservasFiltradas.length === 0 && (
+                    <div className="card-fiesta reservas-vazio">
+                        <p>Nenhuma reserva encontrada no sistema.</p>
                     </div>
                 )}
-                
-                {reservas.map(reserva => (
-                    <div key={reserva.id} className="card-fiesta" style={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'center',
-                        gap: '20px',
-                        flexWrap: 'wrap'
-                    }}>
-                        <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-                            <div style={{ 
-                                width: '60px', 
-                                height: '60px', 
-                                background: 'var(--primary)', 
-                                borderRadius: '12px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                fontSize: '1.2rem',
-                                fontWeight: 'bold'
-                            }}>
-                                {reserva.quarto?.numero || '?'}
-                            </div>
+
+                {reservasFiltradas.map((reserva) => (
+                    <article key={reserva.id} className="reserva-card">
+                        <div className="reserva-card__principal">
+                            <div className="reserva-card__quarto">{reserva.quarto?.numero || '?'}</div>
                             <div>
-                                <h3 className="brand-font" style={{ fontSize: '1.2rem' }}>
-                                    {reserva.quarto?.tipo || 'Quarto'} - Suíte {reserva.quarto?.numero}
-                                </h3>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                                    {new Date(reserva.data_entrada).toLocaleDateString('pt-PT')} → {new Date(reserva.data_saida).toLocaleDateString('pt-PT')}
-                                </p>
+                                <span className="reserva-card__referencia">#{reserva.codigo_reserva || String(reserva.id).padStart(8, '0')}</span>
+                                <h3 className="brand-font">{reserva.quarto?.tipo || 'Quarto'} - Suite {reserva.quarto?.numero}</h3>
+                                <p>{formatarData(reserva.data_entrada)} {'->'} {formatarData(reserva.data_saida)} · {reserva.quantidade_dias || '-'} dias · {formatarMoeda(reserva.total_pagar)}</p>
                                 {podeGerenciarReservas && (
-                                    <p style={{ fontSize: '0.85rem', marginTop: '4px' }}>
-                                        Cliente: <strong>{reserva.cliente?.nome}</strong> ({reserva.cliente?.email})
-                                    </p>
+                                    <p>Cliente: <strong>{reserva.nome_cliente || reserva.cliente?.nome}</strong> ({reserva.email_cliente || reserva.cliente?.email})</p>
                                 )}
                             </div>
                         </div>
 
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                            <div style={{ textAlign: 'right' }}>
-                                <span style={{ 
-                                    padding: '6px 16px', 
-                                    borderRadius: '20px', 
-                                    fontSize: '0.75rem',
-                                    fontWeight: 'bold',
-                                    letterSpacing: '1px',
-                                    backgroundColor: reserva.status === 'confirmada' ? 'rgba(34, 197, 94, 0.1)' : 
-                                                     reserva.status === 'pendente' ? 'rgba(234, 179, 8, 0.1)' : 
-                                                     'rgba(239, 68, 68, 0.1)',
-                                    color: reserva.status === 'confirmada' ? '#22c55e' : 
-                                           reserva.status === 'pendente' ? '#eab308' : 
-                                           '#ef4444',
-                                    border: `1px solid ${reserva.status === 'confirmada' ? '#22c55e' : reserva.status === 'pendente' ? '#eab308' : '#ef4444'}`
-                                }}>
-                                    {reserva.status.toUpperCase()}
-                                </span>
-                            </div>
-
-                            <div style={{ display: 'flex', gap: '12px' }}>
-                                {podeGerenciarReservas && (
-                                    <select
-                                        value={reserva.status}
-                                        onChange={e => alterarStatus(reserva.id, e.target.value)}
-                                        style={{ minWidth: '160px', marginBottom: 0 }}
-                                    >
-                                        {opcoesStatus.map(status => (
-                                            <option key={status} value={status}>{status.toUpperCase()}</option>
-                                        ))}
-                                    </select>
-                                )}
-
-                                {podeGerenciarReservas && reserva.status === 'pendente' && (
-                                    <>
-                                        <button onClick={() => alterarStatus(reserva.id, 'confirmada')} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>CONFIRMAR</button>
-                                        <button onClick={() => alterarStatus(reserva.id, 'cancelada')} style={{ padding: '8px 16px', fontSize: '0.8rem', background: 'transparent', border: '1px solid #ef4444', color: '#ef4444', borderRadius: '8px', cursor: 'pointer' }}>REJEITAR</button>
-                                    </>
-                                )}
-                                
-                                {podeGerenciarReservas && reserva.status === 'confirmada' && (
-                                    <button onClick={() => alterarStatus(reserva.id, 'concluida')} className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }}>CHECKOUT</button>
-                                )}
-
-                                {usuario.tipo === 'cliente' && reserva.status === 'pendente' && (
-                                    <button onClick={() => cancelarReserva(reserva.id)} style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '0.9rem' }}>Cancelar Reserva</button>
-                                )}
-                            </div>
+                        <div className="reserva-card__detalhes">
+                            <span className={`reserva-status reserva-status--${reserva.status}`}>{reserva.status}</span>
+                            <span className="reserva-pagamento">Pagamento: {reserva.pagamento_status || 'pendente'}</span>
+                            {reserva.expira_em && reserva.status === 'pendente' && (
+                                <span className="reserva-pagamento">Expira: {new Date(reserva.expira_em).toLocaleString('pt-PT')}</span>
+                            )}
                         </div>
-                    </div>
+
+                        <div className="reserva-card__acoes">
+                            {podeGerenciarReservas && (
+                                <select value={reserva.status} onChange={(e) => alterarStatus(reserva.id, e.target.value)}>
+                                    {opcoesStatus.filter((status) => status !== 'todos').map((status) => (
+                                        <option key={status} value={status}>{status.toUpperCase()}</option>
+                                    ))}
+                                </select>
+                            )}
+
+                            {podeGerenciarReservas && reserva.comprovativo_path && (
+                                <button type="button" onClick={() => baixarComprovativo(reserva)} className="btn-secondary">
+                                    Baixar Comprovativo
+                                </button>
+                            )}
+
+                            {podeGerenciarReservas && reserva.status === 'pendente' && (
+                                <>
+                                    <button type="button" onClick={() => alterarStatus(reserva.id, 'confirmada')} className="btn-primary">Aprovar</button>
+                                    <button type="button" onClick={() => alterarStatus(reserva.id, 'cancelada')} className="btn-danger">Rejeitar</button>
+                                </>
+                            )}
+
+                            {podeGerenciarReservas && reserva.status === 'confirmada' && (
+                                <button type="button" onClick={() => alterarStatus(reserva.id, 'concluida')} className="btn-primary">Checkout</button>
+                            )}
+
+                            {usuario.tipo === 'cliente' && reserva.status === 'pendente' && (
+                                <button type="button" onClick={() => cancelarReserva(reserva.id)} className="btn-danger">Cancelar Reserva</button>
+                            )}
+                        </div>
+                    </article>
                 ))}
-            </div>
-        </div>
+            </section>
+        </main>
     );
 };

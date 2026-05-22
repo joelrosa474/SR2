@@ -9,11 +9,14 @@ class RepositorioReserva:
     def obter_por_id(self, reserva_id: int):
         return self.db.query(Reserva).filter(Reserva.id == reserva_id).first()
 
+    def obter_por_codigo(self, codigo_reserva: str):
+        return self.db.query(Reserva).filter(Reserva.codigo_reserva == codigo_reserva).first()
+
     def listar_todas(self):
-        return self.db.query(Reserva).all()
+        return self.db.query(Reserva).order_by(Reserva.criado_em.desc()).all()
 
     def listar_por_cliente(self, cliente_id: int):
-        return self.db.query(Reserva).filter(Reserva.cliente_id == cliente_id).all()
+        return self.db.query(Reserva).filter(Reserva.cliente_id == cliente_id).order_by(Reserva.criado_em.desc()).all()
 
     def criar(self, reserva: Reserva):
         self.db.add(reserva)

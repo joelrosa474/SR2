@@ -2,8 +2,9 @@ const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 async function fetchComAuth(endpoint, options = {}) {
     const { redirectOn401 = true, ...fetchOptions } = options;
+    const bodyEhFormulario = fetchOptions.body instanceof FormData;
     const headers = {
-        'Content-Type': 'application/json',
+        ...(bodyEhFormulario ? {} : { 'Content-Type': 'application/json' }),
         ...fetchOptions.headers,
     };
 
@@ -100,6 +101,23 @@ export const apiServico = {
         method: 'POST',
         body: JSON.stringify(dados),
     }),
+    realizarReservaComComprovativo: (dados) => fetchComAuth('/reservas/com-comprovativo', {
+        method: 'POST',
+        body: dados,
+    }),
+    obterUrlComprovativo: (id) => `${BASE_URL}/reservas/${id}/comprovativo`,
+    baixarComprovativo: async (id) => {
+        const response = await fetch(`${BASE_URL}/reservas/${id}/comprovativo`, {
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Erro ao baixar comprovativo');
+        }
+
+        return response.blob();
+    },
     atualizarStatusReserva: (id, status) => fetchComAuth(`/reservas/${id}/status/?novo_status=${status}`, {
         method: 'PATCH',
     }),

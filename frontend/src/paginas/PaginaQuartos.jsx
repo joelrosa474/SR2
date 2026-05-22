@@ -1,29 +1,46 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { apiServico } from '../servicos/api';
 import { useAuth } from '../hooks/useAuth';
 import { ModalReserva } from '../components/ModalReserva';
 import toast from 'react-hot-toast';
 import heroFallback from '../assets/hero.png';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { useNavigate } from 'react-router-dom';
 
-const imagensHotel = Object.values(
-    import.meta.glob('../assets/IMG/*.{jpg,jpeg,png,webp}', {
-        eager: true,
-        import: 'default',
-    })
-);
+const imagensPorCaminho = import.meta.glob('../assets/IMG/*.{jpg,jpeg,png,webp}', {
+    eager: true,
+    import: 'default',
+});
 
-const obterImagemQuarto = (quarto, index) => {
+const imagensHotel = Object.values(imagensPorCaminho);
+
+const imagensSuiteSuperVip = [
+    imagensPorCaminho['../assets/IMG/Suite Vip1.jpeg'],
+    imagensPorCaminho['../assets/IMG/Suite VIp2 (2).jpeg'],
+    imagensPorCaminho['../assets/IMG/Suipe Vip3.jpeg'],
+    imagensPorCaminho['../assets/IMG/Suipe Vip4.jpeg'],
+].filter(Boolean);
+
+const servicosIncluidos = ['Wi-Fi', 'Ar condicionado', 'TV', 'Casa de banho privativa', 'Limpeza diaria'];
+
+const formatarMoeda = (valor) => `${Number(valor || 0).toLocaleString('pt-AO')} Kz`;
+
+const obterGaleriaQuarto = (quarto, index) => {
+    if (quarto.tipo?.toLowerCase().includes('super vip') && imagensSuiteSuperVip.length >= 4) {
+        return imagensSuiteSuperVip.slice(0, 4);
+    }
+
     const imagemCadastrada = quarto.imagem_url?.trim();
     if (
         imagemCadastrada &&
         (imagemCadastrada.startsWith('http') || imagemCadastrada.startsWith('/') || imagemCadastrada.startsWith('data:'))
     ) {
-        return imagemCadastrada;
+        return [imagemCadastrada, ...imagensHotel.slice(index, index + 3)];
     }
 
-    if (imagensHotel.length === 0) return heroFallback;
-    return imagensHotel[index % imagensHotel.length];
+    if (imagensHotel.length === 0) return [heroFallback, heroFallback, heroFallback, heroFallback];
+
+    return Array.from({ length: 4 }, (_, posicao) => imagensHotel[(index + posicao) % imagensHotel.length]);
 };
 
 export const PaginaQuartos = () => {
@@ -32,6 +49,7 @@ export const PaginaQuartos = () => {
     const [modalAberto, setModalAberto] = useState(false);
     const [quartoSelecionado, setQuartoSelecionado] = useState(null);
     const { usuario } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         carregarQuartos();
@@ -49,7 +67,7 @@ export const PaginaQuartos = () => {
     };
 
     const reservar = async (dados) => {
-        await apiServico.realizarReserva(dados);
+        await apiServico.realizarReservaComComprovativo(dados);
         carregarQuartos();
     };
 
@@ -68,130 +86,119 @@ export const PaginaQuartos = () => {
         setModalAberto(true);
     };
 
-    if (carregando) return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-main)' }}>Preparando as suítes...</div>;
+    const clicarGaleria = () => {
+        if (!usuario) {
+            navigate('/login');
+        }
+    };
+
+    if (carregando) {
+        return <div style={{ textAlign: 'center', padding: '100px', color: 'var(--text-main)' }}>Preparando as suites...</div>;
+    }
 
     return (
-        <div style={{ padding: '60px 5%', background: 'white', color: 'var(--text-main)', minHeight: '100vh' }}>
-            <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-                <h1 className="brand-font" style={{ fontSize: '3.5rem', color: 'var(--text-main)', marginBottom: '16px' }}>Nossas Suítes</h1>
-                <p style={{ color: 'var(--text-muted)', maxWidth: '600px', margin: '0 auto', fontSize: '1.1rem' }}>
-                    Escolha a experiência perfeita para a sua estadia no Hotel Fiesta. 
-                    Do conforto executivo ao luxo absoluto das nossas suítes VIP.
-                </p>
-            </div>
+        <main className="pagina-quartos">
+            <header className="pagina-quartos__cabecalho">
+                <h1 className="brand-font">Reservas do Cliente</h1>
+                <p>Escolha o quarto, confira os detalhes e envie o comprovativo para validacao da sua estadia.</p>
+            </header>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: '40px' }}>
-                {quartos.map((quarto, index) => (
-                    <div key={quarto.id} className="card-fiesta" style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden', padding: 0 }}>
-                        <div style={{
-                            height: '240px',
-                            position: 'relative',
-                            overflow: 'hidden',
-                            background: '#f3f4f6',
-                            display: 'flex',
-                            alignItems: 'flex-end',
-                            padding: '24px'
-                        }}>
-                            <img
-                                src={obterImagemQuarto(quarto, index)}
-                                alt={`Suite ${quarto.numero} - ${quarto.tipo}`}
-                                loading="lazy"
-                                onError={e => { e.currentTarget.src = heroFallback; }}
-                                style={{
-                                    position: 'absolute',
-                                    inset: 0,
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    zIndex: 0,
+            <section className="lista-quartos-reserva">
+                {quartos.map((quarto, index) => {
+                    const galeria = obterGaleriaQuarto(quarto, index);
+                    const capacidade = quarto.tipo?.toLowerCase().includes('suite') || quarto.tipo?.toLowerCase().includes('vip') ? 3 : 2;
+
+                    return (
+                        <article key={quarto.id} className="quarto-reserva">
+                            <div
+                                className={`galeria-quarto ${!usuario ? 'galeria-quarto--clicavel' : ''}`}
+                                onClick={clicarGaleria}
+                                role={!usuario ? 'button' : undefined}
+                                tabIndex={!usuario ? 0 : undefined}
+                                onKeyDown={(e) => {
+                                    if (!usuario && (e.key === 'Enter' || e.key === ' ')) clicarGaleria();
                                 }}
-                            />
-                            <div style={{
-                                position: 'absolute',
-                                inset: 0,
-                                zIndex: 1,
-                                background: 'linear-gradient(rgba(0,0,0,0.05), rgba(0,0,0,0.62))',
-                            }} />
-                            <span style={{
-                                position: 'relative',
-                                zIndex: 2,
-                                background: 'rgba(0,0,0,0.7)', 
-                                color: 'var(--secondary)', 
-                                padding: '4px 12px', 
-                                borderRadius: '4px',
-                                fontSize: '0.8rem',
-                                fontWeight: '600',
-                                letterSpacing: '1px'
-                            }}>
-                                {quarto.tipo.toUpperCase()}
-                            </span>
-                        </div>
-                        
-                        <div style={{ padding: '24px', flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                                <h3 className="brand-font" style={{ fontSize: '1.5rem' }}>Suíte {quarto.numero}</h3>
-                                <div style={{ textAlign: 'right' }}>
-                                    <div style={{ fontSize: '1.4rem', fontWeight: 'bold', color: 'var(--text-main)' }}>
-                                        {quarto.preco.toLocaleString()} Kz
+                            >
+                                <div className="galeria-quarto__miniaturas">
+                                    {galeria.map((imagem, posicao) => (
+                                        <img
+                                            key={`${quarto.id}-${imagem}-${posicao}`}
+                                            src={imagem}
+                                            alt={quarto.tipo?.toLowerCase().includes('super vip')
+                                                ? `Suite Super VIP ${posicao + 1}`
+                                                : `Imagem ${posicao + 1} do quarto ${quarto.numero}`}
+                                            onError={(e) => { e.currentTarget.src = heroFallback; }}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="detalhes-quarto">
+                                <div className="detalhes-quarto__topo">
+                                    <div>
+                                        <p>Quarto {quarto.numero}</p>
+                                        <h2 className="brand-font">Suite {quarto.numero}</h2>
                                     </div>
-                                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>por noite</div>
+                                    <span className={`status-quarto status-quarto--${quarto.status}`}>
+                                        {quarto.status}
+                                    </span>
                                 </div>
-                            </div>
-                            
-                            <p style={{ color: 'var(--text-muted)', marginBottom: '24px', fontSize: '0.95rem' }}>
-                                {quarto.descricao}
-                            </p>
 
-                            {quarto.preco_5h && (
-                                <div style={{ 
-                                    background: 'rgba(212, 175, 55, 0.05)', 
-                                    padding: '12px', 
-                                    borderRadius: '8px', 
-                                    border: '1px dashed var(--secondary)',
-                                    marginBottom: '24px',
-                                    fontSize: '0.9rem',
-                                    display: 'flex',
-                                    justifyContent: 'space-between'
-                                }}>
-                                    <span style={{ color: 'var(--secondary)' }}>Opção 5h (Demi Journée):</span>
-                                    <span style={{ fontWeight: 'bold' }}>{quarto.preco_5h.toLocaleString()} Kz</span>
+                                <div className="detalhes-quarto__bloco">
+                                    <span>Tipo do quarto</span>
+                                    <strong>{quarto.tipo}</strong>
                                 </div>
-                            )}
 
-                            <div style={{ marginTop: 'auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <span style={{ 
-                                    color: quarto.status === 'disponivel' ? '#22c55e' : '#ef4444',
-                                    fontSize: '0.9rem',
-                                    fontWeight: '500'
-                                }}>
-                                    ● {quarto.status.toUpperCase()}
-                                </span>
-                                
-                                {quarto.status === 'disponivel' ? (
-                                    <button 
-                                        onClick={() => abrirModalReserva(quarto)} 
-                                        className="btn-primary"
-                                        style={{ padding: '10px 24px' }}
-                                    >
-                                        RESERVAR AGORA
-                                    </button>
-                                ) : (
-                                    <button disabled style={{ padding: '10px 24px', background: '#333', color: '#666', border: 'none', borderRadius: '8px' }}>
-                                        INDISPONÍVEL
-                                    </button>
+                                <div className="detalhes-quarto__bloco">
+                                    <span>Descricao detalhada</span>
+                                    <p>{quarto.descricao}</p>
+                                </div>
+
+                                <div className="detalhes-quarto__servicos">
+                                    <span>Servicos incluidos</span>
+                                    <div>
+                                        {servicosIncluidos.map((servico) => <strong key={servico}>{servico}</strong>)}
+                                    </div>
+                                </div>
+
+                                <div className="detalhes-quarto__metricas">
+                                    <div>
+                                        <span>Preco por diaria</span>
+                                        <strong>{formatarMoeda(quarto.preco)}</strong>
+                                    </div>
+                                    <div>
+                                        <span>Capacidade</span>
+                                        <strong>{capacidade} pessoas</strong>
+                                    </div>
+                                </div>
+
+                                {quarto.preco_5h && (
+                                    <div className="detalhes-quarto__diaria-curta">
+                                        <span>Opcao 5h</span>
+                                        <strong>{formatarMoeda(quarto.preco_5h)}</strong>
+                                    </div>
                                 )}
+
+                                <button
+                                    onClick={() => abrirModalReserva(quarto)}
+                                    className="btn-primary detalhes-quarto__botao"
+                                    disabled={quarto.status !== 'disponivel'}
+                                >
+                                    {quarto.status === 'disponivel' ? 'Reservar Quarto' : 'Indisponivel'}
+                                </button>
                             </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                        </article>
+                    );
+                })}
+            </section>
+
             {modalAberto && quartoSelecionado && (
-                <ModalReserva 
-                    quarto={quartoSelecionado} 
-                    onClose={() => setModalAberto(false)} 
-                    onReservar={reservar} 
+                <ModalReserva
+                    quarto={quartoSelecionado}
+                    onClose={() => setModalAberto(false)}
+                    onReservar={reservar}
                 />
             )}
-        </div>
+        </main>
     );
 };
