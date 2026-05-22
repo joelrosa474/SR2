@@ -437,6 +437,10 @@ a {
   background: #fff;
 }
 
+.pagamento-box--formulario {
+  grid-column: 1 / -1;
+}
+
 .pagamento-box h4 {
   margin-bottom: 8px;
 }
@@ -463,6 +467,17 @@ a {
 
 .formulario-reserva button {
   grid-column: 1 / -1;
+}
+
+.formulario-reserva__acoes {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.formulario-reserva__acoes button {
+  grid-column: auto;
 }
 
 .pagina-reservas {

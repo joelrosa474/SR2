@@ -67,8 +67,9 @@ export const PaginaQuartos = () => {
     };
 
     const reservar = async (dados) => {
-        await apiServico.realizarReservaComComprovativo(dados);
+        const reserva = await apiServico.realizarReservaComComprovativo(dados);
         carregarQuartos();
+        return reserva;
     };
 
     const abrirModalReserva = (quarto) => {
