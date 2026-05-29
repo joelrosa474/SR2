@@ -10,8 +10,8 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const carregarUsuario = async () => {
             try {
-                const sessao = await apiServico.sessao();
-                setUsuario(sessao.autenticado ? sessao.usuario : null);
+                const usuarioAtual = await apiServico.me();
+                setUsuario(usuarioAtual);
             } catch {
                 setUsuario(null);
             } finally {

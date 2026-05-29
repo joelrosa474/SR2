@@ -1,10 +1,21 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://sr2-41zp.onrender.com';
+const TOKEN_STORAGE_KEY = 'hotel_fiesta_access_token';
+
+const obterToken = () => localStorage.getItem(TOKEN_STORAGE_KEY);
+
+const guardarToken = (token) => {
+    if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
+};
+
+const limparToken = () => localStorage.removeItem(TOKEN_STORAGE_KEY);
 
 async function fetchComAuth(endpoint, options = {}) {
     const { redirectOn401 = true, ...fetchOptions } = options;
     const bodyEhFormulario = fetchOptions.body instanceof FormData;
+    const token = obterToken();
     const headers = {
         ...(bodyEhFormulario ? {} : { 'Content-Type': 'application/json' }),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...fetchOptions.headers,
     };
 
@@ -15,6 +26,7 @@ async function fetchComAuth(endpoint, options = {}) {
     });
 
     if (response.status === 401 && redirectOn401) {
+        limparToken();
         window.location.href = '/login';
         throw new Error('Sessao expirada. Faca login novamente.');
     }
@@ -44,13 +56,21 @@ export const apiServico = {
             throw new Error(errorData.detail || 'Login falhou');
         }
 
-        return response.json();
+        const dados = await response.json();
+        guardarToken(dados.access_token);
+        return dados;
     },
 
-    logout: () => fetchComAuth('/logout', {
-        method: 'POST',
-        redirectOn401: false,
-    }),
+    logout: async () => {
+        try {
+            return await fetchComAuth('/logout', {
+                method: 'POST',
+                redirectOn401: false,
+            });
+        } finally {
+            limparToken();
+        }
+    },
 
     me: () => fetchComAuth('/usuarios/me', {
         redirectOn401: false,
@@ -107,8 +127,10 @@ export const apiServico = {
     }),
     obterUrlComprovativo: (id) => `${BASE_URL}/reservas/${id}/comprovativo`,
     baixarComprovativo: async (id) => {
+        const token = obterToken();
         const response = await fetch(`${BASE_URL}/reservas/${id}/comprovativo`, {
             credentials: 'include',
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
         if (!response.ok) {
