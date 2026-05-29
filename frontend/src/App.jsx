@@ -8,38 +8,28 @@ const Navbar = () => {
   const { usuario, logout } = useAuth();
 
   return (
-    <nav className="glass" style={{ 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center', 
-      padding: '1rem 5%', 
-      position: 'sticky', 
-      top: 0, 
-      zIndex: 1000,
-      background: 'white',
-      boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-    }}>
-      <div className="brand-font" style={{ fontSize: '1.8rem', color: 'var(--primary)', fontWeight: 'bold' }}>
+    <nav className="glass navbar-app">
+      <div className="brand-font navbar-app__marca">
         Hotel Fiesta
       </div>
-      <ul style={{ display: 'flex', listStyle: 'none', gap: '2rem', alignItems: 'center' }}>
-        <li><Link to="/quartos" style={{ color: 'var(--text-main)', textDecoration: 'none', fontWeight: '500' }}>Quartos</Link></li>
+      <ul className="navbar-app__links">
+        <li><Link to="/quartos">Quartos</Link></li>
         {usuario && (
           <>
             <li>
-              <Link to="/reservas" style={{ color: 'var(--text-main)', textDecoration: 'none', fontWeight: '500' }}>
+              <Link to="/reservas">
                 {usuario.tipo === 'cliente' ? 'Minhas Reservas' : 'Reservas'}
               </Link>
             </li>
             {usuario.tipo === 'administrador' && (
-              <li><Link to="/admin" style={{ color: 'var(--primary)', textDecoration: 'none', fontWeight: 'bold' }}>Dashboard</Link></li>
+              <li><Link to="/admin" className="navbar-app__destaque">Dashboard</Link></li>
             )}
             <li>
-              <button onClick={logout} className="btn-primary" style={{ padding: '8px 16px' }}>Sair</button>
+              <button onClick={logout} className="btn-primary navbar-app__acao">Sair</button>
             </li>
           </>
         )}
-        {!usuario && <li><Link to="/login" className="btn-primary" style={{ textDecoration: 'none' }}>Entrar</Link></li>}
+        {!usuario && <li><Link to="/login" className="btn-primary navbar-app__acao">Entrar</Link></li>}
       </ul>
     </nav>
   );

@@ -127,13 +127,13 @@ export const PaginaAdmin = () => {
     );
 
     return (
-        <div style={{ padding: '40px 5%', background: 'white', color: 'var(--text-main)', minHeight: '100vh' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' }}>
+        <div className="pagina-admin" style={{ padding: '40px 5%', background: 'white', color: 'var(--text-main)', minHeight: '100vh' }}>
+            <div className="pagina-admin__cabecalho" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '40px', flexWrap: 'wrap', gap: '20px' }}>
                 <div>
                     <h1 className="brand-font" style={{ fontSize: '2.5rem', color: 'var(--primary)' }}>Painel Administrativo</h1>
                     <p style={{ color: 'var(--text-muted)' }}>Gestão do Hotel Fiesta</p>
                 </div>
-                <div style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
+                <div className="pagina-admin__abas" style={{ display: 'flex', gap: '4px', padding: '4px', borderRadius: '10px', background: 'white', border: '1px solid var(--border)' }}>
                     <NavItem id="stats" label="Início" />
                     <NavItem id="quartos" label="Quartos" />
                     <NavItem id="itens" label="Serviços" />
@@ -146,7 +146,7 @@ export const PaginaAdmin = () => {
             ) : (
                 <>
                     {aba === 'stats' && stats && (
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
+                        <div className="admin-metricas" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '24px' }}>
                             <div className="card-fiesta">
                                 <h3 style={{ color: 'var(--text-muted)', fontSize: '0.8rem', letterSpacing: '1px', fontWeight: 'bold' }}>FATURAMENTO</h3>
                                 <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'var(--primary)', marginTop: '8px' }}>
@@ -169,7 +169,7 @@ export const PaginaAdmin = () => {
                     )}
 
                     {aba === 'stats' && stats && (
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '40px' }}>
+                        <div className="admin-graficos" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginTop: '40px' }}>
                             <div className="card-fiesta">
                                 <h3 style={{ marginBottom: '20px', color: 'var(--text-main)' }}>Reservas por Status</h3>
                                 <ResponsiveContainer width="100%" height={300}>
@@ -208,7 +208,7 @@ export const PaginaAdmin = () => {
 
                     {aba === 'quartos' && (
                         <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                            <div className="admin-secao-topo" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
                                 <h2 className="brand-font">Quartos</h2>
                                 <button className="btn-primary" onClick={() => setExibirForm(!exibirForm)}>
                                     {exibirForm ? 'CANCELAR' : '+ NOVO QUARTO'}
@@ -218,7 +218,7 @@ export const PaginaAdmin = () => {
                             {exibirForm && (
                                 <div className="glass card-fiesta" style={{ marginBottom: '40px', padding: '32px' }}>
                                     <h3 className="brand-font" style={{ marginBottom: '24px' }}>Cadastrar Nova Suíte</h3>
-                                    <form onSubmit={handleCriarQuarto} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                                    <form className="admin-form-grid" onSubmit={handleCriarQuarto} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                                         <input placeholder="Número (Ex: 106)" value={novoQuarto.numero} onChange={e => setNovoQuarto({...novoQuarto, numero: e.target.value})} required />
                                         <select value={novoQuarto.tipo} onChange={e => setNovoQuarto({...novoQuarto, tipo: e.target.value})} required>
                                             <option value="">Selecione a Tipologia</option>
@@ -237,7 +237,7 @@ export const PaginaAdmin = () => {
                                 </div>
                             )}
 
-                            <div className="glass" style={{ padding: '24px', borderRadius: '16px', overflowX: 'auto' }}>
+                            <div className="glass admin-tabela" style={{ padding: '24px', borderRadius: '16px', overflowX: 'auto' }}>
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
                                         <tr style={{ textAlign: 'left', color: 'var(--text-muted)', borderBottom: '1px solid var(--glass-border)' }}>
@@ -268,7 +268,7 @@ export const PaginaAdmin = () => {
 
                     {aba === 'itens' && (
                         <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
+                            <div className="admin-secao-topo" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '32px' }}>
                                 <h2 className="brand-font">Serviços</h2>
                                 <button className="btn-primary" onClick={() => setExibirForm(!exibirForm)}>
                                     {exibirForm ? 'CANCELAR' : '+ NOVO SERVIÇO'}
@@ -287,7 +287,7 @@ export const PaginaAdmin = () => {
                                 </div>
                             )}
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+                            <div className="admin-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
                                 {itens.map(item => (
                                     <div key={item.id} className="card-fiesta" style={{ textAlign: 'center' }}>
                                         <h3 className="brand-font">{item.nome}</h3>
@@ -333,7 +333,7 @@ export const PaginaAdmin = () => {
                                 </div>
                             )}
 
-                            <div className="glass" style={{ padding: '24px', borderRadius: '16px', overflowX: 'auto' }}>
+                            <div className="glass admin-tabela" style={{ padding: '24px', borderRadius: '16px', overflowX: 'auto' }}>
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <thead>
                                         <tr style={{ textAlign: 'left', color: 'var(--text-muted)', borderBottom: '1px solid var(--glass-border)' }}>

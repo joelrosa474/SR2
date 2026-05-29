@@ -38,7 +38,7 @@ export const PaginaLogin = () => {
     };
 
     return (
-        <div style={{ 
+        <div className="pagina-login" style={{ 
             display: 'flex', 
             justifyContent: 'center', 
             alignItems: 'center', 
@@ -46,7 +46,7 @@ export const PaginaLogin = () => {
             background: 'white',
             color: 'var(--text-main)'
         }}>
-            <div className="card-fiesta" style={{ 
+            <div className="card-fiesta pagina-login__cartao" style={{ 
                 width: '100%',
                 maxWidth: '450px', 
                 padding: '48px',

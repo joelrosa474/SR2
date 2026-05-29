@@ -15,6 +15,9 @@
   --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.06);
   --shadow-premium: 0 20px 40px rgba(176, 30, 40, 0.1);
   --transition-smooth: all 0.3s ease;
+  --container-max: 1480px;
+  --page-gutter: clamp(16px, 5vw, 72px);
+  --section-y: clamp(32px, 5vw, 72px);
 }
 
 * {
@@ -35,6 +38,7 @@ body {
   color: #111111;
   line-height: 1.6;
   overflow-x: hidden;
+  font-size: clamp(15px, 0.9vw, 18px);
 }
 
 h1,
@@ -50,6 +54,72 @@ input,
 select,
 textarea {
   font-family: inherit;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+a,
+input,
+select,
+textarea {
+  min-width: 0;
+}
+
+.navbar-app {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: clamp(12px, 1.5vw, 22px) var(--page-gutter);
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-app__marca {
+  flex: 0 0 auto;
+  color: var(--primary);
+  font-size: clamp(1.45rem, 2vw, 2.15rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.navbar-app__links {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: clamp(10px, 2vw, 32px);
+  list-style: none;
+}
+
+.navbar-app__links a {
+  color: var(--text-main);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.navbar-app__destaque {
+  color: var(--primary) !important;
+  font-weight: 800 !important;
+}
+
+.navbar-app__acao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 16px;
+  text-decoration: none;
+  white-space: nowrap;
 }
 
 .glass {
@@ -69,6 +139,7 @@ textarea {
   transition: var(--transition-smooth);
   text-transform: uppercase;
   letter-spacing: 1px;
+  line-height: 1.2;
 }
 
 .btn-primary:hover {
@@ -111,6 +182,15 @@ textarea {
   box-shadow: var(--shadow-soft);
   transition: var(--transition-smooth);
   color: var(--text-main);
+}
+
+.pagina-login {
+  padding: var(--section-y) var(--page-gutter);
+}
+
+.pagina-login__cartao {
+  max-width: min(450px, 100%) !important;
+  padding: clamp(24px, 5vw, 48px) !important;
 }
 
 .card-fiesta:hover {
@@ -171,7 +251,9 @@ a {
   min-height: 100vh;
   background: #fff;
   color: var(--text-main);
-  padding: 56px 5% 72px;
+  padding: var(--section-y) var(--page-gutter);
+  margin: 0 auto;
+  max-width: var(--container-max);
 }
 
 .pagina-quartos__cabecalho {
@@ -191,13 +273,13 @@ a {
 
 .lista-quartos-reserva {
   display: grid;
-  gap: 32px;
+  gap: clamp(18px, 2.5vw, 36px);
 }
 
 .quarto-reserva {
   display: grid;
-  grid-template-columns: minmax(240px, 0.72fr) minmax(320px, 1.28fr);
-  gap: 22px;
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(16px, 2vw, 28px);
   align-items: stretch;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -209,7 +291,7 @@ a {
 .galeria-quarto {
   display: grid;
   min-width: 0;
-  width: min(100%, 440px);
+  width: min(100%, 520px);
   align-self: start;
   justify-self: center;
 }
@@ -234,10 +316,10 @@ a {
 .galeria-quarto__miniaturas {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-rows: 118px;
+  grid-auto-rows: clamp(96px, 11vw, 170px);
   gap: 8px;
   height: 100%;
-  min-height: 244px;
+  min-height: clamp(204px, 23vw, 348px);
 }
 
 .detalhes-quarto {
@@ -271,7 +353,8 @@ a {
 }
 
 .detalhes-quarto__topo h2 {
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2.2vw, 2.35rem);
+  line-height: 1.1;
 }
 
 .status-quarto {
@@ -354,17 +437,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(12px, 3vw, 32px);
   background: rgba(0, 0, 0, 0.58);
 }
 
 .modal-reserva {
   width: min(1080px, 100%);
-  max-height: 92vh;
+  max-height: min(92vh, 980px);
   overflow: auto;
   background: #fff;
   border-radius: 8px;
-  padding: 24px;
+  padding: clamp(16px, 2.5vw, 32px);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
 }
 
@@ -482,9 +565,11 @@ a {
 
 .pagina-reservas {
   min-height: 100vh;
-  padding: 56px 5% 72px;
+  padding: var(--section-y) var(--page-gutter);
   background: #fff;
   color: var(--text-main);
+  margin: 0 auto;
+  max-width: var(--container-max);
 }
 
 .pagina-reservas__cabecalho {
@@ -537,7 +622,7 @@ a {
 
 .reservas-filtros {
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) 220px;
+  grid-template-columns: minmax(240px, 1fr) minmax(180px, 220px);
   gap: 14px;
   margin-bottom: 22px;
 }
@@ -549,7 +634,7 @@ a {
 
 .reserva-card {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(170px, 0.45fr) minmax(260px, 0.7fr);
+  grid-template-columns: minmax(260px, 1fr) minmax(170px, 0.45fr) minmax(230px, 0.7fr);
   gap: 18px;
   align-items: center;
   border: 1px solid var(--border);
@@ -564,6 +649,16 @@ a {
   align-items: center;
   gap: 16px;
   min-width: 0;
+}
+
+.reserva-card__principal > div:last-child {
+  min-width: 0;
+}
+
+.reserva-card__principal h3,
+.reserva-card__principal p,
+.reserva-card__referencia {
+  overflow-wrap: anywhere;
 }
 
 .reserva-card__quarto {
@@ -602,6 +697,7 @@ a {
 .reserva-card__acoes button,
 .reserva-card__acoes select {
   width: auto;
+  max-width: 100%;
   margin-bottom: 0;
   padding: 9px 12px;
   font-size: 0.78rem;
@@ -641,10 +737,65 @@ a {
   color: var(--text-muted);
 }
 
+.pagina-admin {
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: var(--section-y) var(--page-gutter) !important;
+}
+
+.pagina-admin__cabecalho h1 {
+  font-size: clamp(2rem, 4vw, 3.2rem) !important;
+  line-height: 1.08;
+}
+
+.pagina-admin__abas {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.pagina-admin__abas button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.admin-metricas,
+.admin-cards-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)) !important;
+}
+
+.admin-graficos {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.admin-secao-topo {
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.admin-form-grid textarea,
+.admin-form-grid button {
+  grid-column: 1 / -1 !important;
+}
+
+.admin-tabela {
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-tabela table {
+  min-width: 720px;
+}
+
 @media (max-width: 900px) {
   .quarto-reserva,
-  .modal-reserva__grid {
-    grid-template-columns: 1fr;
+  .modal-reserva__grid,
+  .admin-graficos {
+    grid-template-columns: 1fr !important;
   }
 
   .galeria-quarto__miniaturas {
@@ -654,19 +805,33 @@ a {
 }
 
 @media (max-width: 640px) {
-  nav {
+  .navbar-app {
+    align-items: stretch;
     flex-direction: column;
-    gap: 12px;
   }
 
-  nav ul {
-    flex-wrap: wrap;
+  .navbar-app__marca {
+    text-align: center;
+  }
+
+  .navbar-app__links {
     justify-content: center;
-    gap: 0.8rem !important;
+    gap: 8px;
+  }
+
+  .navbar-app__links li {
+    flex: 1 1 auto;
+  }
+
+  .navbar-app__links a,
+  .navbar-app__links button {
+    width: 100%;
+    min-height: 42px;
+    text-align: center;
   }
 
   .pagina-quartos {
-    padding: 36px 4% 56px;
+    padding: 36px var(--page-gutter) 56px;
   }
 
   .quarto-reserva,
@@ -680,8 +845,29 @@ a {
   }
 
   .detalhes-quarto__metricas,
-  .formulario-reserva {
-    grid-template-columns: 1fr;
+  .formulario-reserva,
+  .formulario-reserva__acoes,
+  .reservas-resumo,
+  .reservas-filtros,
+  .admin-form-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .detalhes-quarto__topo,
+  .detalhes-quarto__diaria-curta,
+  .pagina-reservas__cabecalho,
+  .pagina-admin__cabecalho,
+  .admin-secao-topo {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .pagina-admin__abas {
+    width: 100%;
+  }
+
+  .pagina-admin__abas button {
+    flex: 1 0 auto;
   }
 
   .resumo-reserva__linha,
@@ -704,12 +890,45 @@ a {
 }
 
 @media (max-width: 640px) {
-  .reservas-resumo,
-  .reservas-filtros {
-    grid-template-columns: 1fr;
-  }
-
   .reserva-card__principal {
     align-items: flex-start;
+  }
+
+  .reserva-card__acoes,
+  .reserva-card__acoes button,
+  .reserva-card__acoes select {
+    width: 100%;
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --container-max: 1720px;
+    --page-gutter: clamp(72px, 7vw, 128px);
+  }
+
+  .card-fiesta,
+  .cartao,
+  .quarto-reserva,
+  .reserva-card {
+    padding: clamp(24px, 1.7vw, 36px);
+  }
+
+  .modal-reserva {
+    width: min(1280px, 100%);
+  }
+}
+
+@media (min-width: 2200px) {
+  :root {
+    --container-max: 1960px;
+  }
+
+  body {
+    font-size: 20px;
+  }
+
+  .galeria-quarto {
+    width: min(100%, 620px);
   }
 }
