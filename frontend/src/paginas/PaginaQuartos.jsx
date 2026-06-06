@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { apiServico } from '../servicos/api';
 import { useAuth } from '../hooks/useAuth';
 import { ModalReserva } from '../components/ModalReserva';
-import toast from 'react-hot-toast';
+import { exibirMensagemCentral } from '../components/MensagemCentral';
 import heroFallback from '../assets/hero.png';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { useNavigate } from 'react-router-dom';
@@ -74,12 +74,13 @@ export const PaginaQuartos = () => {
 
     const abrirModalReserva = (quarto) => {
         if (!usuario) {
-            toast.error('Por favor, entre no sistema para realizar uma reserva.');
+            exibirMensagemCentral('Precisas entrar ou criar uma conta para fazer uma reserva.', 'erro');
+            navigate('/login');
             return;
         }
 
         if (usuario.tipo !== 'cliente') {
-            toast.error('Apenas clientes podem realizar reservas por esta pagina.');
+            exibirMensagemCentral('Apenas clientes podem realizar reservas por esta pagina.', 'erro');
             return;
         }
 
@@ -89,6 +90,7 @@ export const PaginaQuartos = () => {
 
     const clicarGaleria = () => {
         if (!usuario) {
+            exibirMensagemCentral('Cria uma conta de cliente para reservar este quarto.', 'info');
             navigate('/login');
         }
     };

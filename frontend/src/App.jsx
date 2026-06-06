@@ -2,6 +2,9 @@ import { BrowserRouter as Router, Link } from 'react-router-dom';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 import { RotasApp } from './rotas';
 import { Toaster } from 'react-hot-toast';
+import { BarraProgressoServidor } from './components/BarraProgressoServidor';
+import { MensagemCentral } from './components/MensagemCentral';
+import logoHotel from './assets/IMG/logo1.jpeg';
 import './estilos/global.css';
 
 const Navbar = () => {
@@ -9,9 +12,10 @@ const Navbar = () => {
 
   return (
     <nav className="glass navbar-app">
-      <div className="brand-font navbar-app__marca">
-        Hotel Fiesta
-      </div>
+      <Link to="/quartos" className="navbar-app__marca" aria-label="Hotel Fiesta">
+        <img src={logoHotel} alt="Logo do Hotel Fiesta" className="navbar-app__logo" />
+        <span className="brand-font">Hotel Fiesta</span>
+      </Link>
       <ul className="navbar-app__links">
         <li><Link to="/quartos">Quartos</Link></li>
         {usuario && (
@@ -39,9 +43,11 @@ function App() {
   return (
     <AuthProvider>
       <Router>
+        <BarraProgressoServidor />
         <Navbar />
         <RotasApp />
         <Toaster position="top-right" />
+        <MensagemCentral />
       </Router>
     </AuthProvider>
   );

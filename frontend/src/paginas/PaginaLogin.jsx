@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { exibirMensagemCentral } from '../components/MensagemCentral';
 import { apiServico } from '../servicos/api';
 
 export const PaginaLogin = () => {
@@ -10,12 +11,14 @@ export const PaginaLogin = () => {
     const [telefone, setTelefone] = useState('');
     const [modoCadastro, setModoCadastro] = useState(false);
     const [erro, setErro] = useState('');
+    const [enviando, setEnviando] = useState(false);
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErro('');
+        setEnviando(true);
         try {
             if (modoCadastro) {
                 await apiServico.registrar({
@@ -26,6 +29,7 @@ export const PaginaLogin = () => {
                     tipo: 'cliente',
                     status: 'ativo',
                 });
+                exibirMensagemCentral('Conta criada com sucesso. A iniciar sessao...', 'sucesso');
             }
 
             const user = await login(email, senha);
@@ -33,7 +37,11 @@ export const PaginaLogin = () => {
             else if (user.tipo === 'funcionario') navigate('/reservas');
             else navigate('/quartos');
         } catch (err) {
-            setErro(err.message);
+            const mensagem = err.message || 'Nao foi possivel concluir o pedido. Tente novamente.';
+            setErro(mensagem);
+            exibirMensagemCentral(mensagem, 'erro');
+        } finally {
+            setEnviando(false);
         }
     };
 
@@ -130,8 +138,13 @@ export const PaginaLogin = () => {
                         />
                     </div>
 
-                    <button type="submit" className="btn-primary" style={{ width: '100%', padding: '16px' }}>
-                        {modoCadastro ? 'CRIAR CONTA E ENTRAR' : 'ENTRAR NO SISTEMA'}
+                    <button
+                        type="submit"
+                        className="btn-primary"
+                        style={{ width: '100%', padding: '16px' }}
+                        disabled={enviando}
+                    >
+                        {enviando ? 'A PROCESSAR...' : (modoCadastro ? 'CRIAR CONTA E ENTRAR' : 'ENTRAR NO SISTEMA')}
                     </button>
                 </form>
 

@@ -1,6 +1,33 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://sr2-41zp.onrender.com';
 const TOKEN_STORAGE_KEY = 'hotel_fiesta_access_token';
 
+let requisicoesAtivas = 0;
+const ouvintesRequisicoes = new Set();
+
+const notificarRequisicoes = () => {
+    const ativo = requisicoesAtivas > 0;
+    ouvintesRequisicoes.forEach((ouvinte) => ouvinte(ativo));
+};
+
+export const observarRequisicoes = (ouvinte) => {
+    ouvintesRequisicoes.add(ouvinte);
+    ouvinte(requisicoesAtivas > 0);
+
+    return () => ouvintesRequisicoes.delete(ouvinte);
+};
+
+const comProgresso = async (acao) => {
+    requisicoesAtivas += 1;
+    notificarRequisicoes();
+
+    try {
+        return await acao();
+    } finally {
+        requisicoesAtivas = Math.max(0, requisicoesAtivas - 1);
+        notificarRequisicoes();
+    }
+};
+
 const obterToken = () => localStorage.getItem(TOKEN_STORAGE_KEY);
 
 const guardarToken = (token) => {
@@ -10,33 +37,35 @@ const guardarToken = (token) => {
 const limparToken = () => localStorage.removeItem(TOKEN_STORAGE_KEY);
 
 async function fetchComAuth(endpoint, options = {}) {
-    const { redirectOn401 = true, ...fetchOptions } = options;
-    const bodyEhFormulario = fetchOptions.body instanceof FormData;
-    const token = obterToken();
-    const headers = {
-        ...(bodyEhFormulario ? {} : { 'Content-Type': 'application/json' }),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...fetchOptions.headers,
-    };
+    return comProgresso(async () => {
+        const { redirectOn401 = true, ...fetchOptions } = options;
+        const bodyEhFormulario = fetchOptions.body instanceof FormData;
+        const token = obterToken();
+        const headers = {
+            ...(bodyEhFormulario ? {} : { 'Content-Type': 'application/json' }),
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...fetchOptions.headers,
+        };
 
-    const response = await fetch(`${BASE_URL}${endpoint}`, {
-        ...fetchOptions,
-        headers,
-        credentials: 'include',
+        const response = await fetch(`${BASE_URL}${endpoint}`, {
+            ...fetchOptions,
+            headers,
+            credentials: 'include',
+        });
+
+        if (response.status === 401 && redirectOn401) {
+            limparToken();
+            window.location.href = '/login';
+            throw new Error('Sessao expirada. Faca login novamente.');
+        }
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Erro na requisicao');
+        }
+
+        return response.json();
     });
-
-    if (response.status === 401 && redirectOn401) {
-        limparToken();
-        window.location.href = '/login';
-        throw new Error('Sessao expirada. Faca login novamente.');
-    }
-
-    if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.detail || 'Erro na requisicao');
-    }
-
-    return response.json();
 }
 
 export const apiServico = {
@@ -45,11 +74,11 @@ export const apiServico = {
         formData.append('username', email);
         formData.append('password', senha);
 
-        const response = await fetch(`${BASE_URL}/token`, {
+        const response = await comProgresso(() => fetch(`${BASE_URL}/token`, {
             method: 'POST',
             body: formData,
             credentials: 'include',
-        });
+        }));
 
         if (!response.ok) {
             const errorData = await response.json();
@@ -128,10 +157,10 @@ export const apiServico = {
     obterUrlComprovativo: (id) => `${BASE_URL}/reservas/${id}/comprovativo`,
     baixarComprovativo: async (id) => {
         const token = obterToken();
-        const response = await fetch(`${BASE_URL}/reservas/${id}/comprovativo`, {
+        const response = await comProgresso(() => fetch(`${BASE_URL}/reservas/${id}/comprovativo`, {
             credentials: 'include',
             headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
+        }));
 
         if (!response.ok) {
             const errorData = await response.json();
