@@ -108,7 +108,7 @@ export const PaginaGaleriaHotel = () => {
                         {secao.imagens.map((item, index) => (
                             <figure
                                 key={`${secao.id}-${item.alt}-${index}`}
-                                className={index === 0 ? 'galeria-card galeria-card--destaque' : 'galeria-card'}
+                                className="galeria-card"
                             >
                                 <img src={item.src} alt={item.alt} loading="lazy" />
                                 <figcaption>{item.alt}</figcaption>
