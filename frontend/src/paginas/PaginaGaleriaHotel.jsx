@@ -14,7 +14,6 @@ const secoesGaleria = [
             { src: imagem('Quarto1.jpeg'), alt: 'Quarto com cama arrumada no Hotel Fiesta' },
             { src: imagem('Quarto2.jpeg'), alt: 'Quarto acolhedor do Hotel Fiesta' },
             { src: imagem('Quarto3.jpeg'), alt: 'Quarto com mobiliario do Hotel Fiesta' },
-            { src: imagem('WhatsApp Image 2026-05-11 at 11.27.09.jpeg'), alt: 'Detalhe interno de quarto do Hotel Fiesta' },
         ],
     },
     {

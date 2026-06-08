@@ -1130,8 +1130,8 @@ a {
 
 .galeria-secao {
   display: grid;
-  gap: 18px;
-  padding: clamp(28px, 5vw, 64px) 0;
+  gap: 16px;
+  padding: clamp(16px, 2vw, 24px) 0;
   border-top: 1px solid var(--border);
   scroll-margin-top: 180px;
 }
@@ -1153,7 +1153,7 @@ a {
 
 .galeria-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   grid-auto-flow: dense;
   gap: 4px;
 }
