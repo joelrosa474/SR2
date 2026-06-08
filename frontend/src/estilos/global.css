@@ -1155,7 +1155,7 @@ a {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   grid-auto-flow: dense;
-  gap: 4px;
+  gap: 12px;
 }
 
 .galeria-grid:hover .galeria-card:not(:hover) {
