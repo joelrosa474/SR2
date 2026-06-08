@@ -2,6 +2,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { PaginaLogin } from '../paginas/PaginaLogin';
 import { PaginaQuartos } from '../paginas/PaginaQuartos';
+import { PaginaGaleriaHotel } from '../paginas/PaginaGaleriaHotel';
 import { PaginaAdmin } from '../paginas/PaginaAdmin';
 import { PaginaReservas } from '../paginas/PaginaReservas';
 
@@ -22,6 +23,7 @@ export const RotasApp = () => {
         <Routes>
             <Route path="/login" element={<PaginaLogin />} />
             <Route path="/quartos" element={<PaginaQuartos />} />
+            <Route path="/galeria" element={<PaginaGaleriaHotel />} />
             
             <Route path="/admin" element={
                 <RotaPrivada tiposPermitidos={['administrador']}>

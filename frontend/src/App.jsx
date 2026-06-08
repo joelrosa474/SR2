@@ -18,6 +18,7 @@ const Navbar = () => {
       </Link>
       <ul className="navbar-app__links">
         <li><Link to="/quartos">Quartos</Link></li>
+        <li><Link to="/galeria">Galeria</Link></li>
         {usuario && (
           <>
             <li>
