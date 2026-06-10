@@ -17,8 +17,8 @@ const Navbar = () => {
         <span className="brand-font">Hotel Fiesta</span>
       </Link>
       <ul className="navbar-app__links">
-        <li><Link to="/quartos">Quartos</Link></li>
-        <li><Link to="/galeria">Galeria</Link></li>
+        <li><Link to="/galeria">Página Inicial</Link></li>
+        <li><Link to="/quartos">Reservas de quartos</Link></li>
         {usuario && (
           <>
             <li>

@@ -102,7 +102,7 @@ export const PaginaQuartos = () => {
     return (
         <main className="pagina-quartos">
             <header className="pagina-quartos__cabecalho">
-                <h1 className="brand-font">Reservas do Cliente</h1>
+                <h1 className="brand-font">Reservas de quartos</h1>
                 <p>Escolha o quarto, confira os detalhes e envie o comprovativo para validacao da sua estadia.</p>
             </header>
 

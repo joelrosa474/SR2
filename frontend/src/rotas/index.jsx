@@ -37,7 +37,7 @@ export const RotasApp = () => {
                 </RotaPrivada>
             } />
 
-            <Route path="/" element={<Navigate to="/quartos" />} />
+            <Route path="/" element={<Navigate to="/galeria" />} />
         </Routes>
     );
 };
