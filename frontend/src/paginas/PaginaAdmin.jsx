@@ -229,8 +229,8 @@ export const PaginaAdmin = () => {
                                             <option value="Suite Premium">Suite Premium</option>
                                             <option value="Suite Standard 1">Suite Standard 1</option>
                                         </select>
-                                        <input type="number" placeholder="Preço Diária (Kz)" value={novoQuarto.preco} onChange={e => setNovoQuarto({...novoQuarto, preco: e.target.value})} required />
-                                        <input type="number" placeholder="Preço 5h (Opcional)" value={novoQuarto.preco_5h} onChange={e => setNovoQuarto({...novoQuarto, preco_5h: e.target.value})} />
+                                        <input type="number" min="0" placeholder="Preço Diária (Kz)" value={novoQuarto.preco} onChange={e => setNovoQuarto({...novoQuarto, preco: e.target.value})} required />
+                                        <input type="number" min="0" placeholder="Preço 5h (Opcional)" value={novoQuarto.preco_5h} onChange={e => setNovoQuarto({...novoQuarto, preco_5h: e.target.value})} />
                                         <textarea placeholder="Descrição da suíte..." style={{ gridColumn: 'span 2', minHeight: '100px' }} value={novoQuarto.descricao} onChange={e => setNovoQuarto({...novoQuarto, descricao: e.target.value})} required />
                                         <button type="submit" className="btn-primary" style={{ gridColumn: 'span 2' }}>SALVAR QUARTO</button>
                                     </form>
